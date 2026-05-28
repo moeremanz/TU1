@@ -38,7 +38,7 @@
 
 **Owner Allocation (30M TU1):**
 - Sent directly to owner wallet at contract deployment
-- Fully unlocked — no lock or vesting restrictions
+- Fully unlocked
 - Intended for: exchange listings, partnerships, team expansion
 
 **Team Vesting Wallet (70M TU1):**
@@ -57,6 +57,7 @@
 | **Max Mints per Wallet** | 10 |
 | **Total Mints Available** | 5,500 |
 | **Total Mint Supply** | 550,000,000 TU1 |
+| **Mint Period** | 3 days or until sold out (whichever comes first) |
 
 ### 3.1 Fee per Mint ($1)
 
@@ -71,10 +72,18 @@
 ```
 Total Mint Revenue        = $5,500
 ├── 👑 Owner Revenue     = $1,650  (direct — to owner wallet)
-└── 💧 LP Contribution   = $3,850  (to pool — NOT revenue, provides trading liquidity)
+└── 💧 LP Contribution   = $3,850  (to pool — provides trading liquidity)
 ```
 
 > **Note:** LP Contribution is not revenue — it is added to the DEX pool to bootstrap initial trading liquidity.
+
+### 3.3 Unsold Mint Supply — Burn Policy
+
+Any TU1 tokens remaining unsold after the **3-day mint period** will be **permanently burned**. This ensures:
+
+- Fixed, verifiable circulating supply from day one
+- No dilution risk from unsold tokens entering circulation later
+- Incentive to mint early — supply decreases over time
 
 ---
 
@@ -95,7 +104,7 @@ Total Mint Revenue        = $5,500
 | **Month 3 — Month 6** | 🟢 LINEAR VEST | ~777,778 TU1 per day* |
 | **Month 6+** | ✅ FULLY VESTED | 70,000,000 TU1 |
 
-*\*Block-by-block linear vesting. Claimable any time during the vesting period. Longer wait = larger lump sum claimable at once.*
+*\*Block-by-block linear vesting. Claimable any time during the vesting period.*
 
 **Vesting Curve:**
 ```
@@ -184,7 +193,86 @@ Total Swap Fee: 1.50%
 
 ---
 
-## 6. Final Reference — All Parameters
+## 6. Token Utility 🪙
+
+TU1 is not just a trading token — it powers an **autonomous AI-agent ecosystem**.
+
+### Current Utility
+
+| Utility | Status | Detail |
+|---------|--------|--------|
+| 🤖 **Agent Development** | ✅ Active | TU1 treasury funds Hermes AI agent development for automated treasury management, market analysis, and community interaction |
+| 🔮 **TBA** | 📅 Coming | Additional utilities to be announced as the ecosystem evolves |
+
+### Why Agent Utility Matters
+
+- The treasury is managed by an AI agent, not a human multisig
+- TU1 holders benefit from agent-driven market operations
+- Future utilities will expand the agent's capabilities
+
+> *The TU1 agent is not just a gimmick — it is the core operational engine of the ecosystem.*
+
+---
+
+## 7. Treasury & Reinvestment Model 🏦
+
+The treasury receives **0.20% of all swap volume** (high-volume mode). Instead of buybacks, we follow a **reinvestment model**:
+
+### Treasury Allocation
+
+| Allocation | % of Treasury | Purpose |
+|------------|--------------|---------|
+| 🎁 **Community Rewards** | 30% | Airdrops, competitions, liquidity incentives, staker rewards |
+| 🤖 **Agent Development** | 40% | AI agent infrastructure, compute, upgrades |
+| 📢 **Marketing & Growth** | 20% | Listings, partnerships, campaigns |
+| 💼 **Operations** | 10% | Legal, audits, admin |
+
+### Monthly Treasury Flow (at $1M daily volume)
+
+```
+Treasury Revenue: $60,000/month ($2,000/day)
+├── 🎁 Community Rewards:   $18,000  → distributed back to holders
+├── 🤖 Agent Development:   $24,000  → infrastructure + compute
+├── 📢 Marketing:           $12,000  → growth initiatives
+└── 💼 Operations:           $6,000  → overhead
+```
+
+> **No buybacks.** Treasury is reinvested into what grows the ecosystem: the agent, the community, and the brand.
+
+---
+
+## 8. Roadmap 🗺️
+
+```
+Phase 0: Tokenomics Finalized
+    └── ✅ Complete
+Phase 1: Smart Contract Development
+    └── 🟡 In progress
+Phase 2: Contract Audit
+    └── ⏳ Third-party security audit
+Phase 3: Mint Launch
+    └── 📅 3-day mint period or until sold out
+Phase 4: DEX Listing + V4 Hook
+    └── 📅 Immediately after mint ends or sold out
+Phase 5: Agent Development
+    └── 📅 AI treasury agent live
+Phase 6: Community Rewards Program
+    └── 📅 30% treasury allocation begins distribution
+More: TBA
+```
+
+### Milestone Triggers
+
+| Event | Trigger | Window |
+|-------|---------|--------|
+| **Mint Launch** | Contract deployed + audited | Day 0 |
+| **DEX Listing + V4 Hook** | Mint sold out OR 3 days elapsed | Day 3 max |
+| **Agent Live** | Post-listing stability achieved | Week 2-4 |
+| **Community Rewards** | Treasury accumulated sufficient funds | Month 1+ |
+
+---
+
+## 9. Final Reference — All Parameters
 
 ```
 SUPPLY_TOTAL        = 1,000,000,000 TU1
@@ -199,6 +287,8 @@ MINT_PRICE          = $1
 MINT_TOKENS         = 100,000 TU1
 MAX_MINT_PER_WALLET = 10
 TOTAL_MINTS         = 5,500
+MINT_PERIOD         = 3 days (or sold out)
+UNSOLD_MINT_BURN    = ✅ Burned after 3 days
 
 MINT_FEE_OWNER      = $0.30 (30%) → direct
 MINT_FEE_LP         = $0.70 (70%) → to pool
@@ -213,35 +303,44 @@ SWAP_FEE_HIGH       = 1.50% (vol ≥ $5K/day)
 LP_LOCK             = 12 months
 TEAM_CLIFF          = 3 months
 TEAM_VEST           = 3 months linear (6 months total from deploy)
+
+TREASURY_COMMUNITY  = 30%
+TREASURY_AGENT      = 40%
+TREASURY_MARKETING  = 20%
+TREASURY_OPS        = 10%
 ```
 
 ---
 
-## 7. Risk & Mitigation
+## 10. Risk & Mitigation
 
 | Risk | Prob. | Mitigation |
 |------|-------|------------|
-| **Bot attack on mint** | 🟡 Medium | Max 10/wallet + riddle gate (Phase 2) |
+| **Bot attack on mint** | 🟡 Medium | Max 10/wallet + riddle gate (Phase 1) |
 | **Liquidity rug pull** | 🟢 Low | 12-month LP lock, verified contract, open source |
 | **Owner price dump** | 🟡 Medium | Only 3% of supply unlocked at TGE — limited downside |
 | **Team dump post-vest** | 🟢 Low | 7% distributed via vesting — gradual release |
-| **Low post-launch volume** | 🟡 Medium | Treasury-funded marketing + buyback program |
-| **Smart contract bug** | 🟡 Medium | Open source + third-party audit |
-| **Mint not fully sold** | 🟢 Low | Remaining mint supply can be burned or transferred to treasury |
+| **Low post-launch volume** | 🟡 Medium | Treasury-funded community rewards + agent-driven growth |
+| **Smart contract bug** | 🟡 Medium | Open source + third-party audit (Phase 2) |
+| **Mint not fully sold** | 🟢 Low | Remaining supply burned after 3 days — deflationary |
 
 ---
 
-## 8. Review Checklist
+## 11. Review Checklist
 
 - [x] Total supply: 55 + 25 + 10 + 10 = 100%
 - [x] Team split: 3% owner (unlocked) + 7% vesting
 - [x] Mint fee split: $0.30 owner + $0.70 LP = $1.00
 - [x] Max mints: 5,500 × 100K = 550M ✓
+- [x] Unsold mint burned after 3 days
 - [x] LP lock: 12 months
 - [x] Team cliff: 3 months
 - [x] Team vest: 3 months linear (6 months total)
 - [x] V4 Hook dynamic fee: 1% low, 1.5% high
 - [x] Fee splitter: owner 0.484% + treasury 0.2%
+- [x] Treasury split: 30% community, 40% agent, 20% marketing, 10% ops
+- [x] Token utility: Agent ecosystem + TBA
+- [x] Roadmap with milestones and triggers
 - [x] Revenue projections calculated
 - [x] Risk matrix documented
 
