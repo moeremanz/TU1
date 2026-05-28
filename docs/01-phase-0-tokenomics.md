@@ -29,22 +29,22 @@
 | **Team** | 100,000,000 | 10% |
 | **TOTAL** | 1,000,000,000 | 100% ✓ |
 
-### 2.1 Team 10% — Detail Split
+### 2.1 Team 10% — Detailed Split
 
-| Sub-Allocation | Amount | % Total | Vesting |
-|----------------|--------|---------|---------|
-| 👑 **Owner Wallet** | 30,000,000 TU1 | 3% | ✅ **No vesting** — cash out kapan saja |
-| 🔒 **Team Vesting** | 70,000,000 TU1 | 7% | 🔴 Cliff 3 bln → 🟢 Linear 3 bln |
+| Sub-Allocation | Amount | % of Total | Vesting |
+|----------------|--------|------------|---------|
+| 👑 **Owner Allocation** | 30,000,000 TU1 | 3% | Unlocked at TGE |
+| 🔒 **Team Vesting** | 70,000,000 TU1 | 7% | 🔴 3-month cliff → 🟢 3-month linear vest |
 
-**Owner Wallet (30M TU1):**
-- Dikirim langsung ke wallet owner saat deploy
-- Tidak ada lock, tidak ada vesting
-- Tuan bebas: transfer ke exchange, jadi LP, hold, cash out via Uniswap, atau bagi ke tim lain
+**Owner Allocation (30M TU1):**
+- Sent directly to owner wallet at contract deployment
+- Fully unlocked — no lock or vesting restrictions
+- Intended for: exchange listings, partnerships, team expansion
 
 **Team Vesting Wallet (70M TU1):**
-- Terkunci di smart contract vesting
-- Untuk: dev, advisor, operational team
-- Distribusi internal diatur Tuan di luar kontrak
+- Locked in a dedicated vesting smart contract
+- Reserved for: developers, advisors, operational contributors
+- Internal distribution managed by the owner off-chain
 
 ---
 
@@ -54,7 +54,7 @@
 |-----------|-------|
 | **Mint Price** | $1 |
 | **Tokens per Mint** | 100,000 TU1 |
-| **Max Mint per Wallet** | 10 |
+| **Max Mints per Wallet** | 10 |
 | **Total Mints Available** | 5,500 |
 | **Total Mint Supply** | 550,000,000 TU1 |
 
@@ -62,7 +62,7 @@
 
 | Destination | Amount | % | Purpose |
 |-------------|--------|---|---------|
-| 👑 **Owner** | $0.30 | 30% | Dev, infra, operational |
+| 👑 **Owner** | $0.30 | 30% | Development, infrastructure, operations |
 | 💧 **LP Pool** | $0.70 | 70% | DEX liquidity foundation |
 | **TOTAL** | $1.00 | 100% ✓ | |
 
@@ -70,35 +70,34 @@
 
 ```
 Total Mint Revenue        = $5,500
-├── 👑 Owner Revenue     = $1,650  (langsung — ke wallet owner)
-└── 💧 LP Contribution   = $3,850  (ke pool — BUKAN revenue)
+├── 👑 Owner Revenue     = $1,650  (direct — to owner wallet)
+└── 💧 LP Contribution   = $3,850  (to pool — NOT revenue, provides trading liquidity)
 ```
 
-> **Catatan:** LP Contribution bukan revenue — masuk ke DEX pool sebagai initial liquidity agar trading bisa berjalan.
+> **Note:** LP Contribution is not revenue — it is added to the DEX pool to bootstrap initial trading liquidity.
 
 ---
 
 ## 4. Lock & Vesting Schedule
 
-### 4.1 👑 Owner Wallet — 30M TU1
+### 4.1 👑 Owner Allocation — 30M TU1
 
 | Status | Detail |
 |--------|--------|
-| ✅ **No lock** | Bisa cash out kapan saja |
-| ✅ **No vesting** | 30M TU1 langsung accessible saat deploy |
-| 🎯 **Tujuan** | Owner pribadi Tuan |
+| ✅ Unlocked at TGE | Available immediately upon contract deployment |
+| 🎯 **Purpose** | Exchange listings, partnerships, operational runway |
 
 ### 4.2 🔒 Team Vesting — 70M TU1
 
-| Periode | Status | Yang Bisa Diclaim |
-|---------|--------|-------------------|
-| **Bulan 0 — Bulan 3** | 🔴 CLIFF | 0 TU1 (terkunci total) |
-| **Bulan 3 — Bulan 6** | 🟢 LINEAR UNLOCK | ~777,778 TU1 per hari* |
-| **Bulan 6+** | ✅ FULLY VESTED | 70,000,000 TU1 |
+| Period | Status | Claimable |
+|--------|--------|-----------|
+| **Month 0 — Month 3** | 🔴 CLIFF | 0 TU1 (fully locked) |
+| **Month 3 — Month 6** | 🟢 LINEAR VEST | ~777,778 TU1 per day* |
+| **Month 6+** | ✅ FULLY VESTED | 70,000,000 TU1 |
 
-*\*Block-by-block linear vesting. Claimable kapan saja selama periode vesting. Semakin lama tunggu, semakin banyak yang bisa diclaim sekaligus.*
+*\*Block-by-block linear vesting. Claimable any time during the vesting period. Longer wait = larger lump sum claimable at once.*
 
-**Visual:**
+**Vesting Curve:**
 ```
  100% |                             ██
       |                          ██▒▒
@@ -110,15 +109,15 @@ Total Mint Revenue        = $5,500
       |        ██▒▒▒▒▒▒▒▒▒▒▒▒▒▒
    0% |  ████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
       |  └─CLIFF─┘←─── LINEAR ──→
-      |  0      3                 6 bulan
+      |  0      3                 6 months
 ```
 
 ### 4.3 💧 LP Lock — 250M TU1
 
 | Status | Detail |
 |--------|--------|
-| 🔴 **Lock 12 bulan** | Tidak bisa ditarik sama sekali |
-| ✅ **Post-lock** | Bisa dikelola owner (extend lock / withdrawal) |
+| 🔴 **Locked 12 months** | Cannot be withdrawn under any conditions |
+| ✅ **Post-lock** | Owner can manage (extend lock / gradual withdrawal) |
 
 ---
 
@@ -127,12 +126,12 @@ Total Mint Revenue        = $5,500
 ### 5.1 Dynamic Fee Logic
 
 ```solidity
-// Simplified pseudocode — the actual V4 Hook implementation
+// Simplified pseudocode — actual V4 Hook implementation
 function getFee(volume24h) {
     if (volume24h < 5_000 USD) {
         return 1.00%;     // Low volume — prioritize LP growth
     } else {
-        return 1.50%;     // High volume — balanced split
+        return 1.50%;     // High volume — balanced distribution
     }
 }
 ```
@@ -145,7 +144,7 @@ function getFee(volume24h) {
 | 🏦 **Treasury** | 0.30% | $15 |
 | **Total Fee** | **1.00%** | **$50** |
 
-> Owner tidak mendapat bagian di low volume mode. Prioritas: memperkuat LP agar trader tertarik.
+> Owner receives no share in low-volume mode. Priority: bootstrap LP attractiveness for traders.
 
 ### 5.3 High Volume Mode (≥ $5,000/day)
 
@@ -159,7 +158,7 @@ function getFee(volume24h) {
 
 ### 5.4 Fee Splitter Logic
 
-Bankr mengambil 0.216% sebagai platform fee dari total 1.50%. Sisa 0.684% adalah **Creator Share** yang di-split:
+Bankr charges 0.216% as a platform fee from the total 1.50%. The remaining 0.684% is the **Creator Share**, split via the Fee Splitter contract:
 
 ```
 Total Swap Fee: 1.50%
@@ -172,7 +171,7 @@ Total Swap Fee: 1.50%
 
 ### 5.5 Revenue Scenarios
 
-| Volume | 👑 Owner/hari | 🏦 Treasury/hari | 💧 LP/hari |
+| Volume | 👑 Owner/day | 🏦 Treasury/day | 💧 LP/day |
 |--------|--------------|-----------------|-----------|
 | $5K | $0* | $15 | $35 |
 | $50K | $242 | $100 | $350 |
@@ -181,7 +180,7 @@ Total Swap Fee: 1.50%
 | $5M | $24,200 | $10,000 | $30,000 |
 | $10M | $48,400 | $20,000 | $60,000 |
 
-*\*Low volume mode — owner share belum aktif*
+*\*Low volume mode — owner share not active*
 
 ---
 
@@ -189,20 +188,20 @@ Total Swap Fee: 1.50%
 
 ```
 SUPPLY_TOTAL        = 1,000,000,000 TU1
-SUPPLY_MINT         =   550,000,000 (55%)  → 5,500 mint × 100K
-SUPPLY_LP           =   250,000,000 (25%)  → Lock 12 bulan
+SUPPLY_MINT         =   550,000,000 (55%)  → 5,500 mints × 100K
+SUPPLY_LP           =   250,000,000 (25%)  → 12-month lock
 SUPPLY_TREASURY     =   100,000,000 (10%)  → Agentic wallet
 SUPPLY_TEAM         =   100,000,000 (10%)
-  ├── OWNER         =    30,000,000 (3%)   → ✅ No vesting
-  └── VESTING       =    70,000,000 (7%)   → 🔴 Cliff 3 + 🟢 Linear 3
+  ├── OWNER         =    30,000,000 (3%)   → ✅ Unlocked at TGE
+  └── VESTING       =    70,000,000 (7%)   → 🔴 3mo cliff + 🟢 3mo linear
 
 MINT_PRICE          = $1
 MINT_TOKENS         = 100,000 TU1
 MAX_MINT_PER_WALLET = 10
 TOTAL_MINTS         = 5,500
 
-MINT_FEE_OWNER      = $0.30 (30%) → langsung
-MINT_FEE_LP         = $0.70 (70%) → ke pool
+MINT_FEE_OWNER      = $0.30 (30%) → direct
+MINT_FEE_LP         = $0.70 (70%) → to pool
 
 SWAP_FEE_LOW        = 1.00% (vol < $5K/day)
 SWAP_FEE_HIGH       = 1.50% (vol ≥ $5K/day)
@@ -211,9 +210,9 @@ SWAP_FEE_HIGH       = 1.50% (vol ≥ $5K/day)
   TRSRY = 0.200%
   BANKR = 0.216%
 
-LP_LOCK             = 12 bulan
-TEAM_CLIFF          = 3 bulan
-TEAM_VEST           = 3 bulan linear (total 6 bulan dari deploy)
+LP_LOCK             = 12 months
+TEAM_CLIFF          = 3 months
+TEAM_VEST           = 3 months linear (6 months total from deploy)
 ```
 
 ---
@@ -223,24 +222,24 @@ TEAM_VEST           = 3 bulan linear (total 6 bulan dari deploy)
 | Risk | Prob. | Mitigation |
 |------|-------|------------|
 | **Bot attack on mint** | 🟡 Medium | Max 10/wallet + riddle gate (Phase 2) |
-| **Liquidity rug pull** | 🟢 Low | LP lock 12 bulan, kontrak verified, open source |
-| **Owner dump price crash** | 🟡 Medium | Hanya 3% supply tanpa vesting — risiko terbatas |
-| **Team dump after vest** | 🟢 Low | 7% terbagi, vesting 6 bulan — distribusi terukur |
-| **Low volume after launch** | 🟡 Medium | Treasury-funded marketing + buyback program |
-| **Smart contract bug** | 🟡 Medium | Open source + audit pihak ketiga |
-| **Mint not fully sold** | 🟢 Low | Sisa mint supply bisa dibakar atau ditransfer ke treasury |
+| **Liquidity rug pull** | 🟢 Low | 12-month LP lock, verified contract, open source |
+| **Owner price dump** | 🟡 Medium | Only 3% of supply unlocked at TGE — limited downside |
+| **Team dump post-vest** | 🟢 Low | 7% distributed via vesting — gradual release |
+| **Low post-launch volume** | 🟡 Medium | Treasury-funded marketing + buyback program |
+| **Smart contract bug** | 🟡 Medium | Open source + third-party audit |
+| **Mint not fully sold** | 🟢 Low | Remaining mint supply can be burned or transferred to treasury |
 
 ---
 
 ## 8. Review Checklist
 
-- [x] Total supply adds up: 55 + 25 + 10 + 10 = 100%
-- [x] Team split: 3% owner (no vest) + 7% vesting
+- [x] Total supply: 55 + 25 + 10 + 10 = 100%
+- [x] Team split: 3% owner (unlocked) + 7% vesting
 - [x] Mint fee split: $0.30 owner + $0.70 LP = $1.00
 - [x] Max mints: 5,500 × 100K = 550M ✓
-- [x] LP lock: 12 bulan
-- [x] Team cliff: 3 bulan
-- [x] Team vest: 3 bulan linear (total 6 bulan)
+- [x] LP lock: 12 months
+- [x] Team cliff: 3 months
+- [x] Team vest: 3 months linear (6 months total)
 - [x] V4 Hook dynamic fee: 1% low, 1.5% high
 - [x] Fee splitter: owner 0.484% + treasury 0.2%
 - [x] Revenue projections calculated
