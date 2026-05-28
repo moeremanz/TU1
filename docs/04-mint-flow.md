@@ -12,6 +12,7 @@ TU1 uses a **signature-based mint** model:
 2. **Agent** signs an EIP-712 permit authorizing the mint
 3. **User** executes the mint transaction — paying their own gas
 4. **Contract** verifies the signature, mints TU1 + NFT
+5. **Fee split** — $0.30 goes to owner, $0.70 goes to LP pool (bootstraps DEX liquidity)
 
 This design keeps the agent as the **gatekeeper** (riddle solver) while allowing **unlimited scalability** (users pay gas, not the agent).
 
@@ -64,6 +65,11 @@ This design keeps the agent as the **gatekeeper** (riddle solver) while allowing
    │                                  │                                  │
    │  ←─ "Minted! TU1 + NFT" ──────│──────────────────────────────── │
 ```
+
+> 🧠 **Fee Split:** When user calls `submitMint`, the contract automatically:
+> - Sends **$0.30** worth of ETH → owner wallet
+> - Accumulates **$0.70** → LP pool (used for DEX liquidity at launch)
+> - Mints **100,000 TU1** → user wallet
 
 ---
 

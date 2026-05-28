@@ -1,6 +1,6 @@
 # 02 — Tokenomics 🪙
 
-> *TU1 tokenomics with DN-404 dynamics.*
+> *TU1 tokenomics with DN-404 dynamics. Every 100K TU1 = 1 NFT = 1 Agent Identity.*
 
 ---
 
@@ -13,6 +13,8 @@
 | **Treasury** | 100,000,000 TU1 | 10% |
 | **Team** | 100,000,000 TU1 | 10% |
 | **TOTAL** | 1,000,000,000 TU1 | 100% |
+
+> **Mint is the only source of initial ETH liquidity.** LP allocation (250M TU1) is paired with ETH collected from mint fees to bootstrap the DEX pool. No external capital required.
 
 ---
 
@@ -62,7 +64,11 @@
 | Destination | Amount | Purpose |
 |-------------|--------|---------|
 | **Owner** | $0.30 | Development, infrastructure |
-| **LP Pool** | $0.70 | DEX liquidity foundation |
+| **LP Pool** | $0.70 | ⭐ Bootstraps DEX liquidity |
+
+> 🧠 **This is the key innovation:** Every mint automatically funds LP.
+> At 5,500 mints → $3,850 ETH accumulated.
+> Paired with 250M TU1 → initial LP pool.
 
 ### Unsold Mint — Burn
 
@@ -71,13 +77,6 @@ Any TU1 remaining unsold after the 3-day mint period is **permanently burned**.
 ---
 
 ## Lock & Vesting
-
-### LP Lock — 250M TU1
-
-| Status | Detail |
-|--------|--------|
-| 🔴 Locked 12 months | Cannot be withdrawn |
-| ✅ Post-lock | Owner can manage |
 
 ### Team Vesting — 70M TU1
 
@@ -112,7 +111,7 @@ Any TU1 remaining unsold after the 3-day mint period is **permanently burned**.
 | 💧 LP Rewards | 0.60% |
 | 👑 Owner (via Fee Splitter) | 0.484% |
 | 🏦 Treasury (via Fee Splitter) | 0.200% |
-| 🏦 Bankr Platform Fee | 0.216% |
+| 💼 Bankr Platform Fee | 0.216% |
 
 ### Fee Splitter Logic
 
@@ -167,12 +166,46 @@ The treasury receives **0.20% of all swap volume** + **10% of TU1 Crypto Graph s
 ```
 DEPLOY (tx.origin = deployer wallet)
 │
-├── 250M LP       → 🔵 DEPLOYER WALLET (for Bankr setup)
-├── 30M Owner     → 👑 OWNER WALLET (unlocked)
-├── 70M Vesting   → 🔒 VESTING CONTRACT (team vesting)
+├── 250M LP       → 🔵 DEPLOYER WALLET (for Bankr LP creation)
+├── 30M Owner     → 👑 OWNER WALLET (unlocked at TGE)
+├── 70M Vesting   → 🔒 VESTING CONTRACT (3mo cliff + 3mo linear)
 ├── 100M Treasury → 🤖 AGENTIC WALLET (post-mint release)
 └── 550M Mint     → Contract (minted via submitMint or burned)
 ```
+
+### LP Creation Flow
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   LP BOOTSTRAP FLOW                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Mint Phase (3 days)                                         │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │ User mints 100K TU1 → pays $1 ETH                     │  │
+│  │                     ├── $0.30 → Owner wallet           │  │
+│  │                     └── $0.70 → LP Pool (ETH escrow)   │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                           ↓                                  │
+│  After mint ends (Day 3)                                     │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │ LP Pool has: ~$3,850 ETH (at 5,500 mints)             │  │
+│  │ + 250M TU1 from supply allocation                      │  │
+│  │                                                         │  │
+│  │ → Create liquidity pair on Bankr                        │  │
+│  │ → LP tokens locked 12 months                            │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                                                              │
+│  Post-Launch                                                 │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │ Treasury can add LP later:                              │  │
+│  │ - Buy TU1 from market → pair with ETH → LP             │  │
+│  │ - LP tokens → treasury (locked separately)             │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+> **No external capital needed.** The mint itself generates both the tokens (buyers get TU1) and the ETH (fees bootstrap LP).
 
 ---
 
@@ -186,3 +219,4 @@ DEPLOY (tx.origin = deployer wallet)
 | Low post-launch volume | 🟡 Medium | Treasury-funded community rewards |
 | Contract bug | 🟡 Medium | Open source + audit (agent + pro later) |
 | Unsold mint | 🟢 Low | Burned after 3 days — deflationary |
+| Low mint participation | 🟡 Medium | Smaller LP pool but no debt — all organic |
