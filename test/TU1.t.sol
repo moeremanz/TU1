@@ -25,13 +25,16 @@ contract TU1Test is Test {
     function setUp() public {
         vm.startPrank(deployer);
 
-        // Deploy vesting contract
-        vesting = new TeamVesting(address(0)); // placeholder
+        // Step 1: Deploy TU1 with dummy vesting address (70M goes to deployer temporarily)
+        tu1 = new TU1(ownerWallet, deployer, agenticWallet);
 
-        // Deploy TU1
-        tu1 = new TU1(ownerWallet, address(vesting), agenticWallet);
+        // Step 2: Deploy real TeamVesting with TU1 token address
+        vesting = new TeamVesting(address(tu1));
 
-        // Deploy FeeSplitter
+        // Step 3: Transfer 70M TU1 from deployer to real vesting contract
+        tu1.transfer(address(vesting), 70_000_000 * 10**18);
+
+        // Step 4: Deploy FeeSplitter
         splitter = new FeeSplitter(ownerWallet, agenticWallet);
 
         vm.stopPrank();
@@ -41,21 +44,27 @@ contract TU1Test is Test {
     // DEPLOY TESTS
     // ═══════════════════════════════════════════════════
 
-    function test_Deploy_Allocations() public {
-        // Deployer gets 250M LP
-        assertEq(tu1.balanceOf(deployer), 250_000_000 * 10**18);
+    function test_Deploy_Allocations() public view {
+        // TU1 constructor: deployer gets 250M LP + 70M (dummy vesting) = 320M
+        // Then setUp transfers 70M from deployer to real vesting contract
+        // So: deployer = 250M, vesting = 70M
+
+        assertEq(tu1.balanceOf(deployer), 250_000_000 * 10**18, "Deployer balance wrong");
 
         // Owner gets 30M
-        assertEq(tu1.balanceOf(ownerWallet), 30_000_000 * 10**18);
+        assertEq(tu1.balanceOf(ownerWallet), 30_000_000 * 10**18, "Owner balance wrong");
 
-        // Vesting gets 70M
-        assertEq(tu1.balanceOf(address(vesting)), 70_000_000 * 10**18);
+        // Vesting gets 70M (transferred from deployer in setUp)
+        assertEq(tu1.balanceOf(address(vesting)), 70_000_000 * 10**18, "Vesting balance wrong");
 
         // Contract holds 650M (100M treasury + 550M mint)
-        assertEq(tu1.balanceOf(address(tu1)), 650_000_000 * 10**18);
+        assertEq(tu1.balanceOf(address(tu1)), 650_000_000 * 10**18, "Contract balance wrong");
+
+        // Total supply = deployer(250M) + owner(30M) + vesting(70M) + contract(650M) = 1B
+        assertEq(tu1.totalSupply(), 1_000_000_000 * 10**18, "Total supply wrong");
     }
 
-    function test_Deploy_TotalSupply() public {
+    function test_Deploy_TotalSupply() public view {
         assertEq(tu1.totalSupply(), 1_000_000_000 * 10**18);
     }
 

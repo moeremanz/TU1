@@ -53,10 +53,10 @@ contract DeployTU1 is Script {
         console.log("Deployer Wallet:  ", vm.addr(vm.envUint("DEPLOYER_PRIVATE_KEY")));
         console.log("");
         console.log("Allocation at deploy:");
-        console.log("250M LP → Deployer      ✅");
-        console.log("30M Owner → Owner       ✅");
-        console.log("70M Vesting → Vesting   ✅");
-        console.log("100M Treasury → Contract (release post-mint)");
-        console.log("550M Mint → Contract");
+        console.log("250M LP to Deployer");
+        console.log("30M Owner to Owner");
+        console.log("70M Vesting to Vesting");
+        console.log("100M Treasury to Contract (release post-mint)");
+        console.log("550M Mint to Contract");
     }
 }
