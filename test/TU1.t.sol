@@ -5,6 +5,8 @@ import {Test} from "forge-std/Test.sol";
 import {TU1} from "../src/TU1.sol";
 import {TeamVesting} from "../src/TeamVesting.sol";
 import {FeeSplitter} from "../src/FeeSplitter.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /**
  * @title TU1Test
@@ -22,6 +24,10 @@ contract TU1Test is Test {
     address public user1 = address(0x4);
     address public user2 = address(0x5);
 
+    // Signing key for agent (signer)
+    uint256 public agentPK = 0xABCD;
+    address public agentAddr = vm.addr(agentPK);
+
     function setUp() public {
         vm.startPrank(deployer);
 
@@ -37,7 +43,39 @@ contract TU1Test is Test {
         // Step 4: Deploy FeeSplitter
         splitter = new FeeSplitter(ownerWallet, agenticWallet);
 
+        // Step 5: Set agent as authorized signer
+        tu1.setSigner(agentAddr);
+
         vm.stopPrank();
+    }
+
+    // ═══════════════════════════════════════════════════
+    // SIGNATURE HELPERS
+    // ═══════════════════════════════════════════════════
+
+    bytes32 private constant MINT_TYPEHASH = keccak256(
+        "MintPermit(address to,uint256 amount,bytes32 riddleHash,uint256 nonce,uint256 deadline)"
+    );
+
+    /// @dev Sign a mint permit using the agent's private key
+    function signMintPermit(
+        address to,
+        uint256 amount,
+        bytes32 riddleHash,
+        uint256 nonce,
+        uint256 deadline
+    ) internal view returns (bytes memory) {
+        bytes32 structHash = keccak256(abi.encode(
+            MINT_TYPEHASH,
+            to,
+            amount,
+            riddleHash,
+            nonce,
+            deadline
+        ));
+        bytes32 digest = MessageHashUtils.toEthSignedMessageHash(structHash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(agentPK, digest);
+        return abi.encodePacked(r, s, v);
     }
 
     // ═══════════════════════════════════════════════════
@@ -224,5 +262,130 @@ contract TU1Test is Test {
         
         // Treasury gets 29.24%
         assertEq(treasuryAfter - treasuryBefore, 0.2924 ether);
+    }
+
+    // ═══════════════════════════════════════════════════
+    // SIGNATURE MINT TESTS
+    // ═══════════════════════════════════════════════════
+
+    function test_SignatureMint_Basic() public {
+        vm.startPrank(deployer);
+        tu1.openMint();
+        vm.stopPrank();
+
+        bytes32 riddleHash = keccak256("crypto is fun");
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = tu1.nonces(user1);
+
+        bytes memory sig = signMintPermit(user1, 3, riddleHash, nonce, deadline);
+
+        vm.prank(user1);
+        tu1.submitMint(3, riddleHash, deadline, sig);
+
+        assertEq(tu1.balanceOf(user1), 300_000 * 10**18);
+        assertEq(tu1.mintedCount(user1), 3);
+        assertEq(tu1.nonces(user1), nonce + 1);
+    }
+
+    function test_SignatureMint_Max10() public {
+        vm.startPrank(deployer);
+        tu1.openMint();
+        vm.stopPrank();
+
+        bytes32 riddleHash = keccak256("answer42");
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = tu1.nonces(user1);
+
+        bytes memory sig = signMintPermit(user1, 10, riddleHash, nonce, deadline);
+
+        vm.prank(user1);
+        tu1.submitMint(10, riddleHash, deadline, sig);
+
+        assertEq(tu1.balanceOf(user1), 1_000_000 * 10**18);
+        assertEq(tu1.mintedCount(user1), 10);
+    }
+
+    function test_Revert_SignatureMint_ReplayRiddle() public {
+        vm.startPrank(deployer);
+        tu1.openMint();
+        vm.stopPrank();
+
+        bytes32 riddleHash = keccak256("crypto");
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce1 = tu1.nonces(user1);
+        uint256 nonce2 = tu1.nonces(user2);
+
+        bytes memory sig1 = signMintPermit(user1, 1, riddleHash, nonce1, deadline);
+        bytes memory sig2 = signMintPermit(user2, 1, riddleHash, nonce2, deadline);
+
+        vm.prank(user1);
+        tu1.submitMint(1, riddleHash, deadline, sig1);
+
+        vm.prank(user2);
+        vm.expectRevert("Riddle already used");
+        tu1.submitMint(1, riddleHash, deadline, sig2);
+    }
+
+    function test_Revert_SignatureMint_Expired() public {
+        vm.startPrank(deployer);
+        tu1.openMint();
+        vm.stopPrank();
+
+        bytes32 riddleHash = keccak256("expired");
+        uint256 deadline = block.timestamp - 1; // Already expired
+        uint256 nonce = tu1.nonces(user1);
+
+        bytes memory sig = signMintPermit(user1, 1, riddleHash, nonce, deadline);
+
+        vm.prank(user1);
+        vm.expectRevert("Permit expired");
+        tu1.submitMint(1, riddleHash, deadline, sig);
+    }
+
+    function test_Revert_SignatureMint_WrongSigner() public {
+        vm.startPrank(deployer);
+        tu1.openMint();
+        vm.stopPrank();
+
+        bytes32 riddleHash = keccak256("wrong key");
+
+        // Sign with a DIFFERENT key (not agentPK)
+        uint256 wrongPK = 0xDEAD;
+        bytes32 structHash = keccak256(abi.encode(
+            MINT_TYPEHASH, user1, uint256(1), riddleHash, uint256(0), block.timestamp + 1 hours
+        ));
+        bytes32 digest = MessageHashUtils.toEthSignedMessageHash(structHash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(wrongPK, digest);
+        bytes memory sig = abi.encodePacked(r, s, v);
+
+        uint256 deadline = block.timestamp + 1 hours;
+
+        vm.prank(user1);
+        vm.expectRevert("Invalid signature");
+        tu1.submitMint(1, riddleHash, deadline, sig);
+    }
+
+    function test_SignatureMint_ExceedsMax_Then_OverMint() public {
+        vm.startPrank(deployer);
+        tu1.openMint();
+        vm.stopPrank();
+
+        // First mint: 10 (max)
+        bytes32 r1 = keccak256("first");
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = tu1.nonces(user1);
+        bytes memory sig1 = signMintPermit(user1, 10, r1, nonce, deadline);
+
+        vm.prank(user1);
+        tu1.submitMint(10, r1, deadline, sig1);
+
+        // Try to mint more — should fail
+        bytes32 r2 = keccak256("second");
+        uint256 nonce2 = tu1.nonces(user1);
+        bytes memory sig2 = signMintPermit(user1, 1, r2, nonce2, deadline);
+
+        vm.prank(user1);
+        vm.expectRevert("Max 10 per wallet");
+        tu1.submitMint(1, r2, deadline, sig2);
     }
 }

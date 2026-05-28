@@ -3,7 +3,9 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title TU1
@@ -16,7 +18,7 @@ import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
  * - Agentic Wallet: Receives 100M Treasury post-mint (automatic release)
  * - Mint Supply: 550M TU1 stays in contract until minted or burned
  */
-contract TU1 is ERC20, Ownable {
+contract TU1 is ERC20, Ownable, ReentrancyGuard {
 
     // ═══════════════════════════════════════════════════
     // CONSTANTS
@@ -54,6 +56,15 @@ contract TU1 is ERC20, Ownable {
     // Flags
     bool public mintOpened;                                  // Mint open/closed
     bool public treasuryReleased;                            // Treasury already sent to agentic wallet
+
+    // Signature mint
+    address public signer;                                   // Address authorized to sign mint permits
+    mapping(address => uint256) public nonces;               // Per-user nonce for replay protection
+
+    // EIP-712
+    bytes32 private constant MINT_TYPEHASH = keccak256(
+        "MintPermit(address to,uint256 amount,bytes32 riddleHash,uint256 nonce,uint256 deadline)"
+    );
 
     // Events
     event MintOpened(uint256 timestamp);
@@ -148,6 +159,77 @@ contract TU1 is ERC20, Ownable {
         require(mintOpened, "Mint not opened");
         mintOpened = false;
         emit MintClosed(block.timestamp);
+    }
+
+    // ═══════════════════════════════════════════════════
+    // SIGNATURE MINT — USER EXECUTED, AGENT AUTHORIZED
+    // ═══════════════════════════════════════════════════
+
+    /**
+     * @notice Set the signer address (agent key) for mint permits.
+     * @param _signer Address that signs mint permits
+     */
+    function setSigner(address _signer) external onlyOwner {
+        require(_signer != address(0), "Signer cannot be zero");
+        signer = _signer;
+    }
+
+    /**
+     * @notice Users call this directly — they pay gas.
+     * Agent must have signed a permit off-chain after verifying the riddle answer.
+     * 
+     * Flow:
+     * 1. User asks agent for a riddle
+     * 2. User solves riddle, submits answer to agent
+     * 3. Agent verifies → signs a permit → sends signature to user
+     * 4. User calls submitMint() — gas paid by user, mint executed
+     * 
+     * @param amount    Number of mints (1-10)
+     * @param riddleHash Hash of the riddle answer
+     * @param deadline  Timestamp after which this permit expires
+     * @param signature Agent's signature authorizing this mint
+     */
+    function submitMint(
+        uint256 amount,
+        bytes32 riddleHash,
+        uint256 deadline,
+        bytes calldata signature
+    ) external nonReentrant {
+        require(block.timestamp <= deadline, "Permit expired");
+        require(mintOpened, "Mint not opened");
+        require(block.timestamp <= mintStartTime + MINT_PERIOD, "Mint period ended");
+        require(amount > 0 && amount <= MAX_MINT_PER_WALLET, "Invalid amount");
+        require(mintedCount[msg.sender] + amount <= MAX_MINT_PER_WALLET, "Max 10 per wallet");
+        require(!usedRiddles[riddleHash], "Riddle already used");
+        
+        uint256 tokenAmount = amount * TOKENS_PER_MINT;
+        require(totalMintsExecuted + amount <= TOTAL_MINTS, "Mint supply exhausted");
+        require(balanceOf(address(this)) >= tokenAmount, "Insufficient contract balance");
+
+        // Verify signature: agent signed (to, amount, riddleHash, nonce, deadline)
+        bytes32 permitHash = MessageHashUtils.toEthSignedMessageHash(
+            keccak256(abi.encode(
+                MINT_TYPEHASH,
+                msg.sender,
+                amount,
+                riddleHash,
+                nonces[msg.sender],
+                deadline
+            ))
+        );
+
+        address recoveredSigner = ECDSA.recover(permitHash, signature);
+        require(recoveredSigner == signer, "Invalid signature");
+
+        // Execute mint
+        usedRiddles[riddleHash] = true;
+        mintedCount[msg.sender] += amount;
+        totalMintsExecuted += amount;
+        nonces[msg.sender]++;
+
+        _transfer(address(this), msg.sender, tokenAmount);
+
+        emit TokensMinted(msg.sender, tokenAmount, amount, riddleHash);
     }
 
     /**
