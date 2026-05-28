@@ -104,8 +104,8 @@ Both ETH and ERC-20 distributions are supported.
 │                     TU1 PIPELINE                                 │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  STEP 1: CONCEPT + DOCS  ◄── KAMU DI SINI                      │
-│  ├── Tokenomics, arsitektur, agent identity                     │
+│  STEP 1: CONCEPT + DOCS  ◄── YOU ARE HERE                      │
+│  ├── Tokenomics, architecture, agent identity                   │
 │  └── Smart contracts, mint flow, treasury                       │
 │                                                                  │
 │  STEP 2: CONTRACTS DEPLOYED                                     │
