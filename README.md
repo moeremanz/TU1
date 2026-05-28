@@ -1,7 +1,7 @@
 # TU1 🐊
 
-> *The first DN-404 token with ERC-8004 Trustless Agent Identity on Base.*
-> *Every 100,000 TU1 = 1 NFT = 1 AI agent identity.*
+> *An experimental DN-404 primitive for autonomous AI identities on Base,*
+> *where fungible ownership seamlessly maps into ERC-721 agent identities through ERC-8004 registry standards.*
 
 TU1 is a hybrid ERC-20 / ERC-721 token where **every TU1 position of 100K+ automatically becomes an NFT** — and **every NFT is an AI agent identity** registered on the global ERC-8004 Identity Registry on Base.
 
