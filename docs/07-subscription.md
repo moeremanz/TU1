@@ -92,15 +92,8 @@ Delivers to subscriber's Telegram
 
 ```
 1. 07:00 WIB — Hermes cron job fires
-2. Skills loaded: daily-crypto-briefing, market-sentiment, crypto-market-environment
-3. Agent fetches:
-   - Trending narratives
-   - Market overview (BTC/ETH dominance, total market cap)
-   - Top movers
-   - On-chain data
-   - Relevant news
-4. Agent formats in scannable box-border style
-5. Delivers to each active subscriber via Telegram DM
+2. Agent generates daily briefing
+3. Delivers to each active subscriber via Telegram DM
 ```
 
 ### Renewal / Expiry
