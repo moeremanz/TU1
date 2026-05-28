@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {Script} from "forge-std/Script.sol";
+import {Script, console2 as console} from "forge-std/Script.sol";
 import {TU1} from "../src/TU1.sol";
 import {TeamVesting} from "../src/TeamVesting.sol";
 import {FeeSplitter} from "../src/FeeSplitter.sol";
