@@ -217,6 +217,6 @@ DEPLOY (tx.origin = deployer wallet)
 | Liquidity rug | 🟢 Low | 12-month LP lock, verified contract |
 | Team dump | 🟢 Low | 7% vesting (cliff + linear) |
 | Low post-launch volume | 🟡 Medium | Treasury-funded community rewards |
-| Contract bug | 🟡 Medium | Open source + audit (agent + pro later) |
+| Contract bug | 🟡 Medium | Open source + audit |
 | Unsold mint | 🟢 Low | Burned after 3 days — deflationary |
 | Low mint participation | 🟡 Medium | Smaller LP pool but no debt — all organic |
