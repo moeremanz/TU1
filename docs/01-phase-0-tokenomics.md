@@ -218,7 +218,7 @@ Users subscribe to access AI-generated market intelligence. Payment is made **ex
 
 **Pricing Mechanism (Dynamic USD Peg):**
 
-Harga subscription dalam USD tetap — jumlah TU1 yang dibayar menyesuaikan harga pasar TU1:
+The subscription price is fixed in USD — the amount of TU1 required adjusts based on TU1's current market price:
 
 | Period | Price (USD peg) | Discount |
 |--------|-----------------|----------|
