@@ -1,6 +1,6 @@
 # 07 — TU1 Crypto Graph 📊
 
-> *Subscription-based AI daily market briefing, delivered at 07:00 WIB.*
+> *Subscription-based AI daily market briefing, delivered daily.*
 > *Pay with TU1 → 90% burned, 10% to treasury.*
 
 ---
@@ -12,7 +12,7 @@ TU1 Crypto Graph is a **daily AI-generated crypto market briefing** delivered au
 | Detail | Value |
 |--------|-------|
 | **Product** | AI-generated daily market briefing |
-| **Delivery** | Telegram DM, daily at 07:00 WIB |
+| **Delivery** | Telegram DM, daily |
 | **Content** | Narrative trending, market overview, price data |
 | **Format** | Scannable with box borders, concise key takeaways |
 | **Price** | $0.50 USD/month (paid in TU1 at market rate) |
@@ -50,7 +50,7 @@ User Subscribes (pays TU1)
 Hermes Agent detects event
          │
          ▼
-Generates daily briefing at 07:00 WIB
+Generates daily briefing
          │
          ▼
 Delivers to subscriber's Telegram
@@ -91,7 +91,7 @@ Delivers to subscriber's Telegram
 ### Daily Delivery
 
 ```
-1. 07:00 WIB — Hermes cron job fires
+1. Hermes cron job fires
 2. Agent generates daily briefing
 3. Delivers to each active subscriber via Telegram DM
 ```
@@ -162,7 +162,7 @@ The TU1 Crypto Graph is delivered by the **Hermes agent** via a cron job:
 
 ```yaml
 name: "TU1 Crypto Graph Daily"
-schedule: "0 7 * * *"    # Every day at 07:00 WIB
+schedule: "0 7 * * *"
 skills:
   - daily-crypto-briefing
   - market-sentiment

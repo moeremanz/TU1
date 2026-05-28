@@ -148,7 +148,7 @@ The treasury receives **0.20% of all swap volume** + **10% of TU1 Crypto Graph s
 | **Launch Week** | $0.30 USD/month |
 | **Burn** | 90% of subscription → 🔥 permanently burned |
 | **Treasury Fee** | 10% → agent development & infrastructure |
-| **Delivery** | Daily at 07:00 WIB |
+| **Delivery** | Daily |
 
 ### Subscription Scenarios
 

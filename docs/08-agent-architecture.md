@@ -13,7 +13,7 @@ TU1 is powered by **Hermes Agent** — an AI agent framework running on the user
 |------|-------------|
 | **🧠 Agent API** | Backend API for the website — riddle generation, answer verification, mint signing |
 | **✍️ Signing Key** | ECDSA keypair (secp256k1) — signs EIP-712 mint permits |
-| **📊 Crypto Graph** | Generate daily market briefing at 07:00 WIB |
+| **📊 Crypto Graph** | Generate daily market briefing |
 | **🏦 Treasury Manager** | AI-guided treasury operations (buyback, rewards) |
 | **📱 Subscription Manager** | Handle subscriptions + briefings via Telegram |
 
@@ -36,7 +36,7 @@ TU1 is powered by **Hermes Agent** — an AI agent framework running on the user
 │  │           │                  │                 │          │   │
 │  │  ┌────────┴──────────────────┴─────────────────┴────────┐ │   │
 │  │  │              Cron Jobs                               │ │   │
-│  │  │  ├── daily-crypto-briefing (07:00 WIB)              │ │   │
+│  │  │  ├── daily-crypto-briefing                           │ │   │
 │  │  │  └── treasury-ops (hourly, if active)               │ │   │
 │  │  └─────────────────────────────────────────────────────┘ │   │
 │  └──────────────────────────────────────────────────────────┘   │
@@ -226,7 +226,7 @@ Agent: Return {signature, to, amount, riddleHash, deadline} to website
 
 ## Cron Jobs
 
-### Daily Crypto Briefing (07:00 WIB)
+### Daily Crypto Briefing
 
 ```yaml
 id: daily-briefing
@@ -356,7 +356,7 @@ Telegram handles **subscriptions and daily briefings only** — minting is via t
 ### Daily Briefing Delivery
 
 ```
-07:00 WIB — Cron triggers
+Cron triggers
     │
     ▼
 Agent generates briefing
@@ -376,7 +376,7 @@ User: /subscribe
 Agent: 📊 TU1 Crypto Graph — $0.50/month
        ┌────────────────────────────────────┐
        │  Daily AI market briefing at       │
-       │  07:00 WIB on Telegram             │
+       │  on Telegram                         │
        │                                    │
        │  90% of TU1 → 🔥 burned            │
        │  10% → 🏦 treasury                 │
@@ -387,7 +387,7 @@ Agent: 📊 TU1 Crypto Graph — $0.50/month
 
 User: [sends TU1 to subscription contract]
 
-Agent: ✅ Subscribed! Your first briefing arrives tomorrow at 07:00 WIB.
+Agent: ✅ Subscribed! Your first briefing arrives tomorrow.
 ```
 
 ---

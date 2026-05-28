@@ -196,7 +196,7 @@ Both ETH and ERC-20 distributions are supported.
 
 | Item | Description |
 |------|-------------|
-| **Product live** | Daily AI market briefing at 07:00 WIB |
+| **Product live** | Daily AI market briefing |
 | **Subscription smart contract** | Pay TU1 → 90% burn, 10% treasury |
 | **Launch week discount** | $0.30 USD / month |
 | **Agent delivery** | Auto-send to Telegram subscribers |
