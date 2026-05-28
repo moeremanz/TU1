@@ -131,7 +131,7 @@ STEP 6: CRYPTO GRAPH LIVE    ── subscriptions → burn → sustainable incom
 
 ## Links
 
-- **GitHub:** [moeremans/TU1](https://github.com/moeremans/TU1)
+- **GitHub:** [moeremanz/TU1](https://github.com/moeremanz/TU1)
 - **Website:** *(coming soon)*
 - **X / Twitter:** *(coming soon)*
 - **Contract:** *(coming soon)*
