@@ -11,11 +11,11 @@ TU1 is powered by **Hermes Agent** — an AI agent framework running on the user
 
 | Role | Description |
 |------|-------------|
-| **🧠 Riddle Engine** | Generate riddles, verify answers, sign mint permits |
-| **✍️ Signing Key** | ECDSA keypair (secp256k1) — signs EIP-712 permits |
+| **🧠 Agent API** | Backend API for the website — riddle generation, answer verification, mint signing |
+| **✍️ Signing Key** | ECDSA keypair (secp256k1) — signs EIP-712 mint permits |
 | **📊 Crypto Graph** | Generate daily market briefing at 07:00 WIB |
 | **🏦 Treasury Manager** | AI-guided treasury operations (buyback, rewards) |
-| **📱 Telegram Bot** | User interface for minting and subscription |
+| **📱 Subscription Manager** | Handle subscriptions + briefings via Telegram |
 
 ---
 
@@ -28,12 +28,13 @@ TU1 is powered by **Hermes Agent** — an AI agent framework running on the user
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │                   HERMES AGENT                             │   │
 │  │                                                           │   │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌──────────────────┐  │   │
-│  │  │ Riddle       │  │ Signing Key │  │ Treasury Manager │  │   │
-│  │  │ Engine       │  │ (ECDSA)     │  │ (AI-guided)     │  │   │
-│  │  └──────┬───────┘  └──────┬──────┘  └────────┬─────────┘  │   │
-│  │         │                 │                   │            │   │
-│  │  ┌──────┴─────────────────┴───────────────────┴─────────┐ │   │
+│  │  ┌─────────────────┐  ┌─────────────┐  ┌──────────────┐  │   │
+│  │  │ Agent API       │  │ Crypto      │  │ Treasury     │  │   │
+│  │  │ (riddles,       │  │ Graph       │  │ Manager      │  │   │
+│  │  │  verify, sign)  │  │ (briefings) │  │ (AI-guided)  │  │   │
+│  │  └────────┬────────┘  └──────┬──────┘  └──────┬───────┘  │   │
+│  │           │                  │                 │          │   │
+│  │  ┌────────┴──────────────────┴─────────────────┴────────┐ │   │
 │  │  │              Cron Jobs                               │ │   │
 │  │  │  ├── daily-crypto-briefing (07:00 WIB)              │ │   │
 │  │  │  └── treasury-ops (hourly, if active)               │ │   │
@@ -42,21 +43,43 @@ TU1 is powered by **Hermes Agent** — an AI agent framework running on the user
 │                           │                                      │
 │                           ▼                                      │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │                 TELEGRAM INTEGRATION                       │   │
+│  │                 EXTERNAL INTERFACES                        │   │
 │  │  ┌────────────────┐  ┌────────────────┐                  │   │
-│  │  │ DM from users  │  │ Home Channel  │                  │   │
-│  │  │ (riddle, mint) │  │ (briefings)   │                  │   │
+│  │  │ Website calls  │  │ Telegram       │                  │   │
+│  │  │ Agent API      │  │ (briefings,    │                  │   │
+│  │  │ (riddle+mint)  │  │  subscriptions)│                  │   │
 │  │  └────────────────┘  └────────────────┘                  │   │
 │  └──────────────────────────────────────────────────────────┘   │
 │                           │                                      │
 │                           ▼                                      │
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │                 ON-CHAIN ACTIONS                           │   │
-│  │  ├── Agent signs permits (off-chain)                     │   │
-│  │  ├── User executes submitMint (pays gas)                 │   │
+│  │  ├── Website calls submitMint() via Agent signature       │   │
+│  │  ├── User approves $1 ETH via WalletConnect              │   │
+│  │  ├── Contract auto-mints NFT + registers ERC-8004        │   │
 │  │  └── Treasury releases (owner executes)                  │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └──────────────────────────────────────────────────────────────────┘
+
+                        ┌──────────────────┐
+                        │   🌐 WEBSITE     │
+                        │   (User-facing)  │
+                        │                  │
+                        │  - WalletConnect │
+                        │  - Riddle UI     │
+                        │  - Payment UI    │
+                        │  - Calls Agent   │
+                        │    API           │
+                        └────────┬─────────┘
+                                 │
+                                 │ HTTP/JSON
+                                 │
+                        ┌────────▼─────────┐
+                        │   Agent API       │
+                        │   GET /riddle     │
+                        │   POST /verify    │
+                        │   POST /mint      │
+                        └──────────────────┘
 ```
 
 ---
@@ -147,10 +170,12 @@ openssl ec -in agent-signing-key.pem -pubout -outform DER | \
 
 ## Riddle Engine
 
+The riddle engine powers the Agent API's `/riddle` and `/verify` endpoints.
+
 ### Flow
 
 ```
-User: "I want to mint"
+Website requests riddle (GET /api/riddle)
   │
   ▼
 Agent: Generate riddle
@@ -161,19 +186,22 @@ Agent: Generate riddle
 Agent: Hash the answer → riddleHash = keccak256(answer)
   │
   ▼
-Agent: Send riddle to user
+Agent: Return {riddle, sessionId, riddleHash, expiresAt} to website
   │
   ▼
-User: Submit answer
+Website shows riddle → User submits answer
+  │
+  ▼
+Website POST /api/verify {sessionId, answer, wallet, amount}
   │
   ▼
 Agent: Verify answer
   ├── keccak256(userAnswer) == riddleHash? 
-  ├── YES → Create mint permit + sign
-  └── NO  → "Wrong answer, try again"
+  ├── YES → Check eligibility + sign EIP-712 permit
+  └── NO  → Return {"status": "rejected"}
   │
   ▼
-Agent: Send signature + permit to user
+Agent: Return {signature, to, amount, riddleHash, deadline} to website
 ```
 
 ### Riddle Templates
@@ -237,52 +265,129 @@ prompt: |
 
 ---
 
-## Mint Interaction (Telegram)
+## Agent API Endpoints
 
-### User Commands
+The website communicates with the agent via a REST API. The agent exposes these endpoints:
+
+### `GET /api/riddle`
+
+```
+Request:
+  GET /api/riddle?wallet=0x...
+
+Response (200):
+{
+  "sessionId": "abc123",
+  "riddle": "What standard makes TU1 NFTs agent identities?",
+  "riddleHash": "0xdef456...",
+  "expiresAt": 1716900000
+}
+```
+
+Generates a unique riddle and stores the hashed answer. Session expires in 1 hour.
+
+### `POST /api/verify`
+
+```
+Request:
+{
+  "sessionId": "abc123",
+  "answer": "erc-8004",
+  "wallet": "0x...",
+  "amount": 5
+}
+
+Response (200 - correct):
+{
+  "status": "verified",
+  "signature": "0xabc...",
+  "to": "0x...",
+  "amount": 5,
+  "riddleHash": "0xdef...",
+  "deadline": 1716900000
+}
+
+Response (403 - wrong):
+{
+  "status": "rejected",
+  "reason": "Wrong answer"
+}
+```
+
+Verifies the answer against the stored hash. If correct → checks eligibility (max 10, not reused) → signs EIP-712 permit.
+
+### `POST /api/mint`
+
+```
+Request:
+{
+  "sessionId": "abc123",
+  "signature": "0xabc...",
+  "amount": 5,
+  "txHash": "0x..."  // payment confirmation
+}
+
+Response (200):
+{
+  "status": "minted",
+  "amount": 5,
+  "tokenId": 42,
+  "txHash": "0x..."
+}
+```
+
+Called after user pays. Agent calls `submitMint()` on contract.
+
+---
+
+## Telegram (Subscription + Briefings)
+
+Telegram handles **subscriptions and daily briefings only** — minting is via the website.
+
+### Telegram Commands
 
 ```text
-/mint              → Start mint flow, get a riddle
-/subscribe         → Subscribe to Crypto Graph
+/subscribe         → Subscribe to TU1 Crypto Graph
 /unsubscribe       → Cancel subscription
-/status            → Check your TU1 balance, NFTs held
+/status            → Check subscription status
 /help              → List all commands
 ```
 
-### Mint Dialog Example
+### Daily Briefing Delivery
 
 ```
-User: /mint
+07:00 WIB — Cron triggers
+    │
+    ▼
+Agent generates briefing
+    │
+    ▼
+Delivers to all active subscribers via Telegram DM
+    │
+    ▼
+Also posts to Home Channel (public preview)
+```
 
-Agent: 🤖 TU1 Mint — Solve this riddle:
-       "What standard makes TU1 NFTs also AI agent identities?"
-       Answer in lowercase.
+### Subscription Dialog
 
-User: erc-8004
+```
+User: /subscribe
 
-Agent: ✅ Correct!
-       Your mint permit is ready:
+Agent: 📊 TU1 Crypto Graph — $0.50/month
        ┌────────────────────────────────────┐
-       │   Amount:  5 mints (500,000 TU1)   │
-       │   Fee:     $5.00                   │
-       │   Expiry:  1 hour                  │
+       │  Daily AI market briefing at       │
+       │  07:00 WIB on Telegram             │
        │                                    │
-       │   submitMint(5, 0xabc..., 0xdef...)│
+       │  90% of TU1 → 🔥 burned            │
+       │  10% → 🏦 treasury                 │
+       │                                    │
+       │  Launch week: $0.30/month          │
        └────────────────────────────────────┘
-       Execute on Base: [Block Explorer Link]
-       Gas cost: ~$0.0015
+       Send 50 TU1 to 0x... to subscribe.
 
-User: [executes transaction on block explorer]
+User: [sends TU1 to subscription contract]
 
-Agent: ✅ Minted! You now have 500,000 TU1 = 5 NFTs
-       Your agent identities registered on ERC-8004!
-       ┌──────────────────────────────┐
-       │ 🖼️ TU1 Agent #42            │
-       │ 🖼️ TU1 Agent #43            │
-       │ 🖼️ TU1 Agent #44            │
-       │ 🖼️ TU1 Agent #45            │
-       │ 🖼️ TU1 Agent #46            │
-       └──────────────────────────────┘
+Agent: ✅ Subscribed! Your first briefing arrives tomorrow at 07:00 WIB.
 ```
 
 ---
@@ -312,4 +417,4 @@ The agent uses on-chain data + market conditions to guide treasury operations:
 | **Agent offline** | Mint window is 3 days — agent can be restarted anytime |
 | **Riddle brute force** | 1-hour expiry, single-use riddles |
 | **Key lost** | Owner can deploy new contract with new key |
-| **Telegram spam** | Rate limiting on `/mint` command |
+| **Telegram spam** | Rate limiting on subscription commands |

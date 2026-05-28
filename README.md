@@ -58,10 +58,10 @@ TU1 is a hybrid ERC-20 / ERC-721 token where **every TU1 position of 100K+ autom
 ### For Minters
 
 ```
-1. /mint on Telegram → agent gives you a riddle
-2. Answer correctly → agent signs a mint permit
-3. Execute submitMint() → pay gas, get TU1 + NFT
-4. Your NFT auto-registers on ERC-8004 → you own an agent identity
+1. Visit website → connect wallet (MetaMask / WalletConnect)
+2. Click "Mint" → solve the riddle
+3. Approve $1 ETH payment → website handles the transaction
+4. Get TU1 + NFT instantly → auto-registered on ERC-8004
 ```
 
 ### For Traders
@@ -88,7 +88,7 @@ Your NFT is more than art — it's an ERC-8004 agent identity.
 ```
 STEP 1: CONCEPT + DOCS       ◄── CURRENT
 STEP 2: TESTNET DEPLOY       ── faucet → deploy → test → verify
-STEP 3: MINT LAUNCH (3 days) ── riddles → permits → mint → ETH accumulation
+STEP 3: MINT LAUNCH (3 days) ── website + agent API → riddles → pay $1 → mint
 STEP 4: DEX LISTING          ── Bankr pool → LP lock → V4 Hook → FeeSplitter
 STEP 5: TREASURY ACTIVE      ── buyback → rewards → operations
 STEP 6: CRYPTO GRAPH LIVE    ── subscriptions → burn → sustainable income

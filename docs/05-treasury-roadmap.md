@@ -115,8 +115,9 @@ Both ETH and ERC-20 distributions are supported.
 │  └── ✅ All 18 tests passing                                    │
 │                                                                  │
 │  STEP 3: MINT LAUNCH (3 days)                                   │
-│  ├── Agent live on Telegram → riddle + sign permits            │
-│  ├── Users mint TU1 → pay $1 ETH                               │
+│  ├── Website live → riddle UI + WalletConnect                   │
+│  ├── Agent API backend → generates riddles, signs permits       │
+│  ├── Users visit website → solve riddle → approve $1 ETH       │
 │  ├── ├── $0.30 → owner wallet                                  │
 │  │   └── $0.70 → LP pool (ETH accumulating)                    │
 │  └── 550M TU1 distributed OR burned after 3 days               │
@@ -175,8 +176,9 @@ Both ETH and ERC-20 distributions are supported.
 | Item | Description |
 |------|-------------|
 | **Deploy to mainnet** | All contracts on Base |
-| **Fund LP** | Deployer creates Bankr pool with 250M TU1 + accumulated ETH |
-| **Open mint** | Agent generates riddles, signs permits |
+| **Website live** | Riddle UI + WalletConnect integration |
+| **Agent API live** | Backend generates riddles, verifies answers, signs permits |
+| **Open mint** | Users visit website → solve riddle → approve $1 ETH |
 | **3-day mint window** | Users mint TU1 + NFT + agent identity |
 | **Unsold burn** | Burn remaining mint supply |
 | **Treasury release** | 100M TU1 → agentic wallet |
