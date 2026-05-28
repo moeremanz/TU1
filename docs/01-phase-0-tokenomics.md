@@ -195,22 +195,59 @@ Total Swap Fee: 1.50%
 
 ## 6. Token Utility 🪙
 
-TU1 is not just a trading token — it powers an **autonomous AI-agent ecosystem**.
+TU1 is not just a trading token — it powers an **autonomous AI-agent ecosystem** with real, revenue-generating products.
 
-### Current Utility
+### Core Products
 
-| Utility | Status | Detail |
+| Product | Status | Detail |
 |---------|--------|--------|
-| 🤖 **Agent Development** | ✅ Active | TU1 treasury funds Hermes AI agent development for automated treasury management, market analysis, and community interaction |
-| 🔮 **TBA** | 📅 Coming | Additional utilities to be announced as the ecosystem evolves |
+| 📊 **TU1 Briefing** *(name TBC)* | 📅 Planned | AI-generated market briefing & crypto analysis — daily/weekly subscription product |
+| 🤖 **Agent Development** | ✅ Active | TU1 treasury funds AI agent for treasury management, market analysis, and community interaction |
+| 🔮 **More TBA** | 📅 Coming | Additional utilities to be announced |
+
+### Subscription Model (TU1 Briefing)
+
+Users subscribe to access AI-generated market intelligence. Payment is made **exclusively in TU1 tokens**:
+
+```
+💰 User subscribes (tu1_price/month — TBD)
+   │
+   ├── 🔥 BURN    → TU1 supply reduced (deflationary)
+   └── 🏦 FEE     → Treasury income (sustains agent development)
+```
+
+**Mechanism:**
+- **Subscription price:** [TBD] TU1 per [month/week — TBD]
+- **Burn:** Subscription amount is permanently burned on-chain
+- **Fee:** A [TBD]% payment fee is charged and sent to treasury
+- **Product:** AI-powered market briefing, analysis, and signals
+
+### Why This Works
+
+```
+          🔥 Every subscriber = supply decreases
+         ↗️
+  📊 Briefing quality → more subscribers → more burn
+         ↖️
+          🏦 Fee feeds treasury → agent gets better
+```
+
+| Investor Lens | Impact |
+|---------------|--------|
+| **Real utility** | Not a memecoin — has a paying product |
+| **Built-in burn** | Every subscription = permanent supply reduction |
+| **Sustainable treasury** | Fees fund development without dilution |
+| **Agent flywheel** | Better product → more users → more burn & fee |
+| **Unique positioning** | First token with AI-agent-as-a-service subscription |
 
 ### Why Agent Utility Matters
 
 - The treasury is managed by an AI agent, not a human multisig
 - TU1 holders benefit from agent-driven market operations
+- The agent itself is the product — users pay TU1 to access its intelligence
 - Future utilities will expand the agent's capabilities
 
-> *The TU1 agent is not just a gimmick — it is the core operational engine of the ecosystem.*
+> *The TU1 agent is not just a gimmick — it is the core operational engine AND the revenue generator of the ecosystem.*
 
 ---
 
@@ -256,7 +293,9 @@ Phase 4: DEX Listing + V4 Hook
     └── 📅 Immediately after mint ends or sold out
 Phase 5: Agent Development
     └── 📅 AI treasury agent live
-Phase 6: Community Rewards Program
+Phase 6: TU1 Briefing Launch
+    └── 📅 Subscription product live (AI market briefing)
+Phase 7: Community Rewards Program
     └── 📅 30% treasury allocation begins distribution
 More: TBA
 ```
@@ -268,6 +307,7 @@ More: TBA
 | **Mint Launch** | Contract deployed + audited | Day 0 |
 | **DEX Listing + V4 Hook** | Mint sold out OR 3 days elapsed | Day 3 max |
 | **Agent Live** | Post-listing stability achieved | Week 2-4 |
+| **TU1 Briefing Launch** | Agent operational + UI ready | Month 1-2 |
 | **Community Rewards** | Treasury accumulated sufficient funds | Month 1+ |
 
 ---
@@ -303,6 +343,10 @@ SWAP_FEE_HIGH       = 1.50% (vol ≥ $5K/day)
 LP_LOCK             = 12 months
 TEAM_CLIFF          = 3 months
 TEAM_VEST           = 3 months linear (6 months total from deploy)
+
+SUBSCRIPTION_PRICE  = [TBD] TU1 per [month]
+SUBSCRIPTION_BURN   = ✅ Full amount burned
+SUBSCRIPTION_FEE    = [TBD]% → Treasury
 
 TREASURY_COMMUNITY  = 30%
 TREASURY_AGENT      = 40%
