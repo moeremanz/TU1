@@ -201,42 +201,100 @@ TU1 is not just a trading token — it powers an **autonomous AI-agent ecosystem
 
 | Product | Status | Detail |
 |---------|--------|--------|
-| 📊 **TU1 Briefing** *(name TBC)* | 📅 Planned | AI-generated market briefing & crypto analysis — daily/weekly subscription product |
+| 📊 **TU1 Crypto Graph** | 📅 Planned | AI-generated daily market briefing & crypto analysis — subscription-based |
 | 🤖 **Agent Development** | ✅ Active | TU1 treasury funds AI agent for treasury management, market analysis, and community interaction |
 | 🔮 **More TBA** | 📅 Coming | Additional utilities to be announced |
 
-### Subscription Model (TU1 Briefing)
+### Subscription Model — TU1 Crypto Graph
 
-Users subscribe to access AI-generated market intelligence. Payment is made **exclusively in TU1 tokens**:
+Users subscribe to access AI-generated market intelligence. Payment is made **exclusively in TU1 tokens** at a dynamic rate pegged to USD:
 
 ```
-💰 User subscribes (tu1_price/month — TBD)
+💰 User subscribes
    │
-   ├── 🔥 BURN    → TU1 supply reduced (deflationary)
-   └── 🏦 FEE     → Treasury income (sustains agent development)
+   ├── 🔥 90% → BURN (permanent supply reduction)
+   └── 🏦 10% → TREASURY (sustains agent development & operations)
 ```
 
-**Mechanism:**
-- **Subscription price:** [TBD] TU1 per [month/week — TBD]
-- **Burn:** Subscription amount is permanently burned on-chain
-- **Fee:** A [TBD]% payment fee is charged and sent to treasury
-- **Product:** AI-powered market briefing, analysis, and signals
+**Pricing Mechanism (Dynamic USD Peg):**
+
+Harga subscription dalam USD tetap — jumlah TU1 yang dibayar menyesuaikan harga pasar TU1:
+
+| Period | Price (USD peg) | Discount |
+|--------|-----------------|----------|
+| **Launch Week (Day 1-7)** | $0.30 USD worth of TU1 | 🎉 40% off |
+| **Normal (Day 8+)** | $0.50 USD worth of TU1 | — |
+
+**Example (at hypothetical TU1 prices):**
+
+| TU1 Market Price | Normal Price | Launch Week Price |
+|-----------------|--------------|-------------------|
+| $0.01 | 50 TU1 | 30 TU1 |
+| $0.05 | 10 TU1 | 6 TU1 |
+| $0.10 | 5 TU1 | 3 TU1 |
+| $0.50 | 1 TU1 | 0.6 TU1 |
+
+**Fee Split:**
+- 🔥 **90%** of subscription value → **permanently burned**
+- 🏦 **10%** → **Treasury** (funds agent development & infrastructure)
+
+### TU1 Crypto Graph — Features
+
+The subscription product delivers the exact same briefing the TU1 AI agent produces daily at 07:00 WIB:
+
+```
+📊 TU1 Crypto Graph — Daily Briefing
+
+📌 Market Overview
+├── Bitcoin dominance & price action
+├── Top movers (gainers/losers)
+└── Fear & Greed Index
+
+🔥 Trending Narratives
+├── Top 3 trending sectors/categories
+└── Notable market catalysts
+
+🐊 TU1 Ecosystem
+├── TU1 price & volume analysis
+├── Key on-chain metrics
+└── Recent developments & announcements
+
+📅 Today's Events
+├── Upcoming catalysts & releases
+└── Risk calendar
+```
+
+**Delivery:** Daily at 07:00 WIB via automated agent.
+
+### Subscription Revenue Projections
+
+| Subscribers | 🔥 Burn/month | 🏦 Treasury/month |
+|-------------|--------------|-------------------|
+| 100 | $45 | $5 |
+| 500 | $225 | $25 |
+| 1,000 | $450 | $50 |
+| 5,000 | $2,250 | $250 |
+| 10,000 | $4,500 | $500 |
+| 50,000 | $22,500 | $2,500 |
+
+*Based on $0.50 USD normal price. Actual TU1 amount varies with market price.*
 
 ### Why This Works
 
 ```
           🔥 Every subscriber = supply decreases
          ↗️
-  📊 Briefing quality → more subscribers → more burn
+  🐊 Crypto Graph quality → more subscribers → more burn
          ↖️
           🏦 Fee feeds treasury → agent gets better
 ```
 
 | Investor Lens | Impact |
 |---------------|--------|
-| **Real utility** | Not a memecoin — has a paying product |
+| **Real utility** | Not a memecoin — has a paying product with real value |
 | **Built-in burn** | Every subscription = permanent supply reduction |
-| **Sustainable treasury** | Fees fund development without dilution |
+| **Dynamic pricing** | USD peg protects subscriber value, TU1-denominated burn increases with price |
+| **Sustainable treasury** | 10% fee funds development without dilution |
 | **Agent flywheel** | Better product → more users → more burn & fee |
 | **Unique positioning** | First token with AI-agent-as-a-service subscription |
 
@@ -293,8 +351,8 @@ Phase 4: DEX Listing + V4 Hook
     └── 📅 Immediately after mint ends or sold out
 Phase 5: Agent Development
     └── 📅 AI treasury agent live
-Phase 6: TU1 Briefing Launch
-    └── 📅 Subscription product live (AI market briefing)
+Phase 6: TU1 Crypto Graph Launch
+    └── 📅 Subscription product live (AI market briefing daily at 07:00 WIB)
 Phase 7: Community Rewards Program
     └── 📅 30% treasury allocation begins distribution
 More: TBA
@@ -307,7 +365,7 @@ More: TBA
 | **Mint Launch** | Contract deployed + audited | Day 0 |
 | **DEX Listing + V4 Hook** | Mint sold out OR 3 days elapsed | Day 3 max |
 | **Agent Live** | Post-listing stability achieved | Week 2-4 |
-| **TU1 Briefing Launch** | Agent operational + UI ready | Month 1-2 |
+| **TU1 Crypto Graph Launch** | Agent operational + UI ready | Month 1-2 |
 | **Community Rewards** | Treasury accumulated sufficient funds | Month 1+ |
 
 ---
@@ -344,9 +402,10 @@ LP_LOCK             = 12 months
 TEAM_CLIFF          = 3 months
 TEAM_VEST           = 3 months linear (6 months total from deploy)
 
-SUBSCRIPTION_PRICE  = [TBD] TU1 per [month]
-SUBSCRIPTION_BURN   = ✅ Full amount burned
-SUBSCRIPTION_FEE    = [TBD]% → Treasury
+SUBSCRIPTION_PRICE  = $0.50 USD / month (dynamic TU1 amount)
+SUBSCRIPTION_DISCOUNT = $0.30 USD / month (launch week only)
+SUBSCRIPTION_BURN   = 90% → 🔥 Burned
+SUBSCRIPTION_FEE    = 10% → Treasury
 
 TREASURY_COMMUNITY  = 30%
 TREASURY_AGENT      = 40%
